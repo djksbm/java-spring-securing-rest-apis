@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.server.resource.introspection.NimbusOpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
+import org.springframework.security.oauth2.server.resource.web.reactive.function.client.ServletBearerExchangeFilterFunction;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -60,7 +62,12 @@ public class ResolutionsApplication extends WebSecurityConfigurerAdapter {
 				properties.getOpaquetoken().getClientSecret());
 		return new UserRepositoryOpaqueTokenIntrospector(introspector, users);
 	}
-
+	@Bean
+	public WebClient.Builder web() {
+		return WebClient.builder()
+				.baseUrl("http://localhost:8081")
+				.filter(new ServletBearerExchangeFilterFunction());
+	}
 	public static void main(String[] args) {
 		SpringApplication.run(ResolutionsApplication.class, args);
 	}
